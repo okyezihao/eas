@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.yezihao.dao.StudentDao">
+
+    <select id="findAllStudent" resultType="Student">
+        SELECT *
+        FROM eas.studt
+    </select>
+
+    <select id="selectStudtById" resultType="Student">
+        SELECT *
+        FROM eas.studt
+        WHERE eas.studt.Sno = #{Sno}
+    </select>
+
+    <insert id="addStudent" parameterType="Student">
+        INSERT INTO eas.studt (Sname, Ssex, Sage, Smajor, Cno)
+        VALUES (#{Sname},#{Ssex},#{Sage},#{Smajor},#{Cno})
+    </insert>
+
+    <update id="updateStudent" parameterType="Student">
+        UPDATE eas.studt
+        SET Sname = #{Sname},
+        Ssex = #{Ssex},
+        Sage = #{Sage},
+        Smajor = #{Smajor},
+        Cno = #{Cno}
+        WHERE Sno = #{Sno}
+    </update>
+
+    <delete id="deleteStudent" parameterType="Integer">
+        DELETE FROM eas.studt
+        WHERE Sno = #{Sno}
+    </delete>
+
+    <select id="selectBySearch" resultType="Student">
+        SELECT *
+        FROM eas.studt
+        WHERE 1=1
+        <if test="search!='' and search!=null">
+            AND Sno LIKE CONCAT('%',#{search},'%')
+            OR Sname LIKE CONCAT('%',#{search},'%')
+            OR Ssex LIKE CONCAT('%',#{search},'%')
+            OR Sage LIKE CONCAT('%',#{search},'%')
+            OR Smajor LIKE CONCAT('%',#{search},'%')
+            OR Cno LIKE CONCAT('%',#{search},'%')
+        </if>
+    </select>
+
+</mapper>

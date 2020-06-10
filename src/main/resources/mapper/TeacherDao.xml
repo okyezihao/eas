@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.yezihao.dao.TeacherDao">
+
+    <select id="findAllTeacher" resultType="Teacher">
+        SELECT *
+        FROM eas.tcher
+    </select>
+
+    <select id="selectTcherById" resultType="Teacher">
+        SELECT *
+        FROM eas.tcher
+        WHERE eas.tcher.Tno = #{Tno}
+    </select>
+
+    <insert id="addTeacher" parameterType="Teacher">
+        INSERT INTO eas.tcher (Tname, Tsex, Tage)
+        VALUES (#{Tname},#{Tsex},#{Tage})
+    </insert>
+
+    <update id="updateTeacher" parameterType="Teacher">
+        UPDATE eas.tcher
+        SET Tname = #{Tname},Tsex = #{Tsex},Tage = #{Tage}
+        WHERE Tno = #{Tno}
+    </update>
+
+    <delete id="deleteTeacher" parameterType="Integer">
+        DELETE FROM eas.tcher
+        WHERE Tno = #{Tno}
+    </delete>
+
+    <select id="selectBySearch" resultType="Teacher">
+        SELECT *
+        FROM eas.tcher
+        WHERE 1=1
+        <if test="search!='' and search!=null">
+            AND Tno LIKE CONCAT('%',#{search},'%')
+            OR Tname LIKE CONCAT('%',#{search},'%')
+            OR Tage LIKE CONCAT('%',#{search},'%')
+            OR Tsex LIKE CONCAT('%',#{search},'%')
+        </if>
+    </select>
+
+</mapper>

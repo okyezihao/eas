@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>教务管理系统</title>
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+
+    <!--头部-->
+    <div th:replace="~{commons/commons::header}"></div>
+
+    <!--侧边栏-->
+    <div th:replace="~{commons/commons::side(active='teaching.html')}"></div>
+
+    <!--内容-->
+    <div th:replace="~{commons/commons::content}"></div>
+
+</div>
+<script th:src="@{/layui/layui.js}"></script>
+<script>
+    layui.use(['layer', 'table', 'element'], function () {
+        var layer = layui.layer //弹层
+            , table = layui.table //表格
+            , $ = layui.jquery; //元素操作
+
+        //执行一个 table 实例
+        table.render({
+            elem: '#demo'
+            , height: 'full-125'
+            , url: '/admin/teaching' //数据接口
+            , id: 'tableId'
+            , title: '用户表'
+            , toolbar: '#toolbarDemo' //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
+            , cols: [
+                [ //表头
+                    {type: 'checkbox', fixed: 'left'}
+                    , {field: 'tno', title: '教工号', sort: true, width: 80, fixed: 'left'}
+                    , {field: 'tname', title: '教师姓名', sort: true}
+                    , {field: 'courcename', title: '课程名称'}
+                    , {field: 'cname', title: '班级名称'}
+                    , {field: 'xname', title: '系名称'}
+                    , {field: 'raddr', title: '地址'}
+                    , {field: 'usetime', title: '总学时', width: 60}
+                    , {field: 'teachtime', title: '授课时间'}
+                    , {field: '操作', fixed: 'right', width: 165, align: 'center', toolbar: '#barDemo'}
+                ]
+            ]
+            , page: true
+            , limit: 20
+            , limits: [15, 20, 25, 30, 50]
+            , parseData: function (res) { //res 即为原始返回的数据
+                if (this.page.curr) {
+                    var result = res.data.slice(this.limit * (this.page.curr - 1), this.limit * this.page.curr);
+                } else {
+                    var result = res.data.slice(0, this.limit);
+                }
+                return {
+                    "code": res.code,
+                    "msg": "",
+                    "count": res.count,
+                    "data": result
+                }
+            }, response: {
+                statusName: 'code' //规定数据状态的字段名称，默认：code
+                , statusCode: 0 //规定成功的状态码，默认：0
+                , msgName: 'msg' //规定状态信息的字段名称，默认：msg
+                , countName: 'count' //规定数据总数的字段名称，默认：count
+                , dataName: 'data' //规定数据列表的字段名称，默认：data
+            }
+        });
+
+        //监听头工具栏事件
+        table.on('toolbar(tb)', function (obj) {
+                var checkStatus = table.checkStatus(obj.config.id)
+                    , data = checkStatus.data  //获取选中的数据
+                    , delList = [];
+                data.forEach(function (n, i) {
+                    delList.push(n.id)
+                });
+                switch (obj.event) {
+                    case 'getCheckData':
+                        layer.alert(JSON.stringify(data));
+                        break;
+                    case 'getCheckLength':
+                        layer.msg('选中了：' + data.length + ' 个');
+                        break;
+                    case 'isAll':
+                        layer.msg(checkStatus.isAll ? '全选' : '未全选');
+                        break;
+                    case 'add':
+                        layer.open({
+                            type: 2,
+                            title: '',
+                            // maxmin: true,
+                            area: ['600px', '380px'],
+                            shadeClose: false, //点击遮罩关闭
+                            content: ['/admin/toAddTching', 'no']
+                        });
+                        break;
+                    case 'update':
+                        if (data.length === 0) {
+                            layer.msg('请选择一行');
+                        } else if (data.length > 1) {
+                            layer.msg('只能同时编辑一个');
+                        } else {
+                            layer.open({
+                                title: '',
+                                type: 2,
+                                area: ['600px', '380px'],
+                                // maxmin: true,
+                                shadeClose: false,
+                                content: ['/admin/toUpdateTching', 'no']
+                            });
+                        }
+                        break;
+                    case 'delete':
+                        if (data.length == 0) {
+                            layer.msg('请选择一行');
+                        } else {
+                            layer.open({
+                                title: '',
+                                type: 2,
+                                area: ['600px', '380px'],
+                                // maxmin: true,
+                                shadeClose: false,
+                                content: ['/admin/toDeleteTching', 'no']
+                            });
+                        }
+                        break;
+                }
+            }
+        );
+
+        //监听行工具事件
+        table.on('tool(tb)', function (obj) { //注：tool 是工具条事件名，tb 是 table 原始容器的属性 lay-filter="对应的值"
+            var data = obj.data //获得当前行数据
+                , layEvent = obj.event; //获得 lay-event 对应的值
+            if (layEvent === 'detail') {
+                layer.alert(JSON.stringify(data));
+            } else if (layEvent === 'del') {
+                layer.open({
+                    title: '',
+                    type: 2,
+                    area: ['600px', '380px'],
+                    // maxmin: true,
+                    shadeClose: false,
+                    content: ['/admin/toDeleteTching', 'no']
+                });
+            } else if (layEvent === 'edit') {
+                layer.open({
+                    title: '',
+                    type: 2,
+                    area: ['600px', '380px'],
+                    // maxmin: true,
+                    shadeClose: false,
+                    content: ['/admin/toUpdateTching', 'no']
+                });
+            }
+            // layer.msg('编辑操作');
+        });
+
+        //搜索功能的实现
+        $(document).on('click', '#SelectPushData', function () {
+            var search = $('#search').val();
+            // 获取输入框信息
+            console.log(search);
+            table.reload('tableId', {
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+                , where: {
+                    search: search
+                }
+                , url: '/admin/selectT'
+                , method: 'post'
+            });
+        });
+
+    });
+</script>
+</body>
+</html>

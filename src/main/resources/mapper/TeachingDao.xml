@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.yezihao.dao.TeachingDao">
+
+    <!--查询所有数据-->
+    <select id="findAllTeaching" resultType="Teaching">
+        SELECT
+        eas.tching.Tno Tno,
+        eas.tcher.Tname Tname,
+        eas.cour.Courcename Courcename,
+        eas.cour.Credit Credit,
+        eas.cla.Cname Cname,
+        eas.sdept.Xname Xname,
+        eas.claroom.Raddr Raddr,
+        eas.occupy.Usetime Usetime,
+        eas.tching.Teachtime Teachtime
+        FROM
+        eas.tching,eas.tcher,eas.cour,eas.cla,
+        eas.sdept,eas.claroom,eas.occupy
+        WHERE eas.tching.Tno = eas.tcher.Tno
+        AND eas.tching.Cno = eas.cla.Cno
+        AND eas.sdept.Xno = eas.cla.Xno
+        AND eas.occupy.Cno = eas.tching.Cno
+        AND eas.occupy.Rno = eas.claroom.Rno
+    </select>
+
+    <select id="selectBySearch" resultType="Teaching">
+        SELECT
+        eas.tching.Tno Tno,
+        eas.tcher.Tname Tname,
+        eas.cour.Courcename Courcename,
+        eas.cour.Credit Credit,
+        eas.cla.Cname Cname,
+        eas.sdept.Xname Xname,
+        eas.claroom.Raddr Raddr,
+        eas.occupy.Usetime Usetime,
+        eas.tching.Teachtime Teachtime
+        FROM
+        eas.tching,eas.tcher,eas.cour,eas.cla,
+        eas.sdept,eas.claroom,eas.occupy
+        WHERE eas.tching.Tno = eas.tcher.Tno
+        AND eas.tching.Cno = eas.cla.Cno
+        AND eas.sdept.Xno = eas.cla.Xno
+        AND eas.occupy.Cno = eas.tching.Cno
+        AND eas.occupy.Rno = eas.claroom.Rno
+        <if test="search!='' and search!=null">
+            AND eas.cour.Courcename LIKE CONCAT('%',#{search},'%')
+            OR eas.claroom.Raddr LIKE CONCAT('%',#{search},'%')
+            OR eas.occupy.Usetime LIKE CONCAT('%',#{search},'%')
+        </if>
+    </select>
+
+</mapper>

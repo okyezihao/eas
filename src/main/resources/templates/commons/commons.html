@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<!--头部-->
+<div class="layui-header" th:fragment="header">
+    <div class="layui-logo">教务管理系统</div>
+    <ul class="layui-nav layui-layout-right">
+        <li class="layui-nav-item" style="margin-right: 50px">
+            <a th:href="@{/admin/toSetting}">
+                <img th:src="@{/img/xiaofu.jpg}" class="layui-nav-img">
+                [[${session.loginUser}]]
+            </a>
+            <dl class="layui-nav-child">
+                <dd><a th:href="@{/logout}">溜了溜了</a></dd>
+            </dl>
+        </li>
+    </ul>
+</div>
+
+<!--侧边栏-->
+<div class="layui-side layui-bg-black" th:fragment="side">
+    <div class="layui-side-scroll">
+        <ul class="layui-nav layui-nav-tree">
+            <li class="layui-nav-item layui-nav-itemed">
+                <a>教师管理</a>
+                <dl class="layui-nav-child">
+                    <dd th:class="${active=='teach.html'?'layui-bg-green':''}"><a th:href="@{/admin/toTeach}">教师信息</a>
+                    </dd>
+                    <dd th:class="${active=='teaching.html'?'layui-bg-green':''}"><a
+                            th:href="@{/admin/toTeaching}">授课信息</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item layui-nav-itemed">
+                <a>学生管理</a>
+                <dl class="layui-nav-child">
+                    <dd th:class="${active=='ssp.html'?'layui-bg-green':''}"><a th:href="@{/admin/toSsp}">学籍处理</a></dd>
+                    <dd th:class="${active=='cm.html'?'layui-bg-green':''}"><a th:href="@{/admin/toCm}">课程管理</a></dd>
+                </dl>
+            </li>
+            <li th:class="${active=='setting.html'?'layui-nav-item layui-bg-green':'layui-nav-item'}"><a
+                    th:href="@{/admin/toSetting}">管理员设置</a></li>
+        </ul>
+    </div>
+</div>
+
+<!--内容-->
+<div class="layui-body" th:fragment="content">
+    <script type="text/html" id="toolbarDemo">
+        <div class="layui-btn-container" style="font-size: 16px">
+            <button class="layui-btn layui-btn-sm" lay-event="add">
+                <i class="layui-icon layui-icon-add-1" style="display: inline-block"></i>
+            </button>
+            <button class="layui-btn layui-btn-sm" lay-event="update">
+                <i class="layui-icon layui-icon-edit" style="display: inline-block"></i>
+            </button>
+            <button class="layui-btn layui-btn-sm" lay-event="delete">
+                <i class="layui-icon layui-icon-delete" style="display: inline-block"></i>
+            </button>
+            <button class="layui-btn layui-btn-sm layui-btn-primary" lay-event="getCheckData">获取选中行数据</button>
+            <button class="layui-btn layui-btn-sm layui-btn-primary" lay-event="getCheckLength">获取选中数目</button>
+            <button class="layui-btn layui-btn-sm layui-btn-primary" lay-event="isAll">验证是否全选</button>
+            <!--搜索功能-->
+            <div class="layui-inline" style="float: right">
+                <div class="layui-input-inline" style="width: 250px;top: -6px">
+                    <input name="search" id="search" autocomplete="off" class="layui-input" placeholder="请输入..."
+                           style="height: 35px">
+                </div>
+
+                <!--搜索按钮-->
+                <button class="layui-btn layui-btn-sm layui-btn-primary" data-type="reload" id="SelectPushData">查询
+                </button>
+            </div>
+        </div>
+    </script>
+    <table class="layui-hide" id="demo" lay-filter="tb"></table>
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+</div>
+
+</html>

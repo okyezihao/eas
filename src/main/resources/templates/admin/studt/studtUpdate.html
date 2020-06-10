@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>表单</title>
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <style>
+        .layui-form-label {
+            width: 100px;
+        }
+
+        .layui-input-block {
+            margin-left: 130px;
+            min-height: 36px
+        }
+
+        .layui-input {
+            width: 380px;
+        }
+
+        .layui-form-select .layui-input {
+            padding-right: 0;
+            cursor: pointer;
+        }
+
+        .layui-form-select {
+            width: fit-content;
+        }
+    </style>
+</head>
+<body class="body">
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+    <legend>修改学生</legend>
+</fieldset>
+
+<form class="layui-form layui-from-pane" th:action="@{/admin/updateStudent}" style="margin-top:20px" method="post">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">学号</label>
+        <div class="layui-input-block">
+            <input type="text" name="Sno" th:value="${studt.sno}" class="layui-input" readonly>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">学生姓名</label>
+        <div class="layui-input-block">
+            <input type="text" name="Sname" required lay-verify="required" th:value="${studt.sname}"
+                   autocomplete="off" placeholder="请输入学生姓名" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">学生性别</label>
+        <div class="layui-input-block">
+            <select class="layui-form-select" name="Ssex">
+                <option th:selected="${studt.ssex}=='男'" value="男">男</option>
+                <option th:selected="${studt.ssex}=='女'" value="女">女</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">学生年龄</label>
+        <div class="layui-input-block">
+            <input type="text" name="Sage" required lay-verify="required" autocomplete="off"
+                   placeholder="请输入学生年龄" class="layui-input" th:value="${studt.sage}">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">学生专业</label>
+        <div class="layui-input-block">
+            <input type="text" name="Smajor" required lay-verify="required" autocomplete="off"
+                   placeholder="请输入学生专业" class="layui-input" th:value="${studt.smajor}">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">学生班级号</label>
+        <div class="layui-input-block">
+            <input type="text" name="Cno" required lay-verify="required" autocomplete="off"
+                   placeholder="请输入学生班级号" class="layui-input" th:value="${studt.cno}">
+        </div>
+    </div>
+
+    <div class="layui-form-item" style="margin-top:40px">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-btn-submit" lay-submit="" lay-filter="yes">确认</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+
+<script th:src="@{/jquery/jquery-3.5.1.js}"></script>
+<script type="text/javascript" th:src="@{/layui/layui.js}" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'layer', 'jquery', 'laydate'], function () {
+        var form = layui.form
+            , layer = layui.layer
+            , $ = layui.jquery;
+
+        //监听提交
+        form.on('submit(yes)', function (data) {
+            //layer.alert(JSON.stringify(data.field))
+            //data=JSON.stringify(data.field)
+            $.ajax({
+                url: '/admin/updateStudent',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    Sno: data.field.Sno,
+                    Sname: data.field.Sname,
+                    Ssex: data.field.Ssex,
+                    Sage: data.field.Sage,
+                    Smajor: data.field.Smajor,
+                    Cno: data.field.Cno,
+                },
+                success: function (msg) {
+                    if (msg == 200) {
+                        layer.closeAll('loading');
+                        layer.load(2);
+                        layer.msg("添加成功", {icon: 6});
+                        setTimeout(function () {
+                            window.parent.location.reload();//修改成功后刷新父界面
+                        }, 200);
+                        //加载层-风格
+                    } else {
+                        layer.msg("已存在,添加失败! ", {icon: 5});
+                    }
+                },
+                error: function (msg) {
+                    layer.alert("班级号不存在");
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

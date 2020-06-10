@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>登录界面</title>
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
+
+    <style>
+        .login {
+            margin: 10% 40%;
+            padding: 15px;
+            background-color: #eee;
+            box-shadow: #0000007a 4px 4px 18px
+        }
+        span {
+            color: red;
+        }
+    </style>
+
+</head>
+<body>
+<div class="login bg-black ">
+
+    <form class="layui-form bg-blue" th:action="@{/login}" method="post">
+        <div class="layui-form-item margin-top-10">
+            <label class="layui-form-label">
+                <i class="layui-icon">&#xe66f;</i>
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" name="username" required lay-verify="username" placeholder="请输入用户名"
+                       autocomplete="off" class="layui-input" lay-verType="msg" id="username">
+                <span th:unless="${#strings.isEmpty(msg)}" th:text="${msg}"></span>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                <i class="layui-icon">&#xe673;</i>
+            </label>
+            <div class="layui-input-inline">
+                <input type="password" name="password" required lay-verify="password" placeholder="请输入密码"
+                       autocomplete="off" class="layui-input" id="password">
+                <span th:unless="${#strings.isEmpty(msg2)}" th:text="${msg2}"></span>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" type="submit">登录</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script th:src="@{/layui/layui.js}"></script>
+<script>
+    //Demo 拿到你所需要用的layui已经封装好的代码
+    layui.use(['form'], function () {
+        var form = layui.form;//表单验证
+
+        //表单验证（页面自动关联,验证结果绑定在表单）
+        form.verify({
+            username: function (value, item) { //value：表单的值、item：表单的DOM对象 自定义验证规则
+                if (value == '') {
+                    return '用户名不能为空';
+                }
+                if (!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)) {
+                    return '用户名不能有特殊字符';
+                }
+                if (/^\d+\d+\d$/.test(value)) {
+                    return '用户名不能全为数字';
+                }
+
+            },
+            password: function (value, item) {
+                if (!/^.{6,12}$/img.test(value)) {
+                    return "密码必须位6~12位"
+                }
+            },
+        });
+    });
+</script>
+</body>
+</html>

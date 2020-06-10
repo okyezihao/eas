@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.yezihao.dao.CourseDao">
+
+    <select id="findAllCourse" resultType="Course">
+        SELECT *,eas.tcher.Tname
+        FROM eas.cour,eas.tcher
+        WHERE eas.tcher.Tno = eas.cour.Courcedirector
+    </select>
+
+    <select id="selectCourById" resultType="Course">
+        SELECT *
+        FROM eas.cour
+        WHERE eas.cour.Courceno = #{Courceno}
+    </select>
+
+    <insert id="addCourse" parameterType="Course">
+        INSERT INTO eas.cour (Courcename, Credit, Courcedirector)
+        VALUES (#{Courcename},#{Credit},#{Courcedirector})
+    </insert>
+
+    <update id="updateCourse" parameterType="Course">
+        UPDATE eas.cour
+        SET Courcename = #{Courcename},Credit = #{Credit},Courcedirector = #{Courcedirector}
+        WHERE Courceno = #{Courceno}
+    </update>
+
+    <delete id="deleteCourse" parameterType="Integer">
+        DELETE FROM eas.cour
+        WHERE Courceno = #{Courceno}
+    </delete>
+
+    <!--bug-->
+    <select id="selectBySearch" resultType="Course">
+        SELECT *,eas.tcher.Tname
+        FROM eas.cour,eas.tcher
+        WHERE eas.tcher.Tno = eas.cour.Courcedirector
+        <if test="search!='' and search!=null">
+            AND eas.cour.Courceno LIKE CONCAT('%',#{search},'%')
+            OR eas.cour.Courcename LIKE CONCAT('%',#{search},'%')
+            OR eas.cour.Credit LIKE CONCAT('%',#{search},'%')
+            OR eas.cour.Courcedirector LIKE CONCAT('%',#{search},'%')
+        </if>
+    </select>
+
+</mapper>

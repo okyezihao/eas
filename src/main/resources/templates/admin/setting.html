@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>教务管理系统</title>
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+
+    <!--头部-->
+    <div th:replace="~{commons/commons::header}"></div>
+
+    <!--侧边栏-->
+    <div th:replace="~{commons/commons::side(active='setting.html')}"></div>
+
+    <!--内容-->
+    <div class="layui-body" style="margin: 50px">
+        <form class="layui-form" th:action="@{/admin/setting}" method="post">
+            <input type="hidden" name="id" th:value="${User.id}">
+            <div class="layui-form-item layui-inline">
+                <label class="layui-form-label">用户名：</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="username" name="username"
+                           class="layui-input" autocomplete="off" th:value="${User.username}" disabled>
+                </div>
+            </div>
+
+            <div class="layui-form-item" id="input_password">
+                <label class="layui-form-label">密码：</label>
+                <div class="layui-input-inline">
+                    <input type="password" name="password" required lay-verify="required" placeholder="请输入密码"
+                           autocomplete="off" class="layui-input" onblur="pwdBlur()" onfocus="pwdFocus()"
+                           id="userpwd">
+                    <span id="pwdError" style="color: red"></span>
+
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">确认密码：</label>
+                <div class="layui-input-inline" id="input_truePassword">
+                    <input type="password" name="rpassword" required lay-verify="required" placeholder="请再次输入密码"
+                           autocomplete="off" class="layui-input" onblur="pwd_trueBlur()" onfocus="pwd_trueFocus()"
+                           id="userpwd_true">
+                    <span id="pwd_trueError" style="color: red"></span>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button type="submit" class="layui-btn" lay-submit lay-filter="formDemo">确认修改</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+</div>
+<script th:src="@{/layui/layui.js}"></script>
+<script>
+    layui.use(['layer', 'form', 'jquery'], function () {
+        var form = layui.form
+            , layer = layui.layer //弹层
+            , $ = layui.jquery; //元素操作
+
+        // 前端校验
+        form.verify({
+            password: function (value) { //value：表单的值
+                if (/^[\S]{6,12}$/.test(value)) {
+                    return '密码必须6到12位，且不能出现空格';
+                }
+                if ($('#password').val() == null) {
+                    return '密码不能为空！';
+                }
+                if ($('#rpassword').val() == null) {
+                    return '确认密码不能为空！';
+                }
+            }
+            , function() {
+                if ($('#password').val() != $('#rpassword').val()) {
+                    return '两次密码输入不一致！';
+                }
+            }
+        });
+
+        //监听提交
+        form.on('submit(yes)', function (data) {
+            $.ajax({
+                url: '/admin/updateUser',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    id: data.field.id,
+                    username: data.field.username,
+                    password: data.field.password
+                },
+                success: function (msg) {
+                    if (msg == 200) {
+                        layer.closeAll('loading');
+                        layer.load(2);
+                        layer.msg("修改成功!", {icon: 6});
+                        setTimeout(function () {
+                            window.parent.location.reload();//修改成功后刷新父界面
+                        }, 200);
+                        //加载层-风格
+                    } else if (msg == 404) {
+                        layer.msg("密码相同，修改失败! ", {icon: 5});
+                    }
+                }
+            });
+            return false;
+        });
+
+    });
+</script>
+<script>
+    // 密码校验
+    function pwdBlur() {
+        var userpwd = document.getElementById("userpwd");
+        if (userpwd.value === "") {
+            document.getElementById("pwdError").innerText = "密码不能为空！";
+        } else if (userpwd.value.length < 6) {
+            document.getElementById("pwdError").innerText = "格式错误，密码长度至少为6位！";
+        } else {
+            document.getElementById("pwdError").innerText = "";
+        }
+    }
+
+    function pwdFocus() {
+        document.getElementById("pwdError").innerText = "";
+    }
+
+    // 确认密码校验
+    function pwd_trueBlur() {
+        var userpwd = document.getElementById("userpwd");
+        var userpwd_true = document.getElementById("userpwd_true");
+        if (userpwd_true.value === "") {
+            document.getElementById("pwd_trueError").innerText = "确认密码不能为空！";
+        } else if (userpwd_true.value != userpwd.value) {
+            document.getElementById("pwd_trueError").innerText = "两次密码输入不一致！";
+        } else {
+            document.getElementById("pwd_trueError").innerText = "";
+        }
+    }
+
+    function pwd_trueFocus() {
+        document.getElementById("pwd_trueError").innerText = "";
+    }
+</script>
+</body>
+</html>
+
+
